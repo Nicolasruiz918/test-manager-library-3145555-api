@@ -34,8 +34,9 @@ remain part of the subsequent deployment work. This command does not create or s
 The feature test dispatches actual requests through Laravel's kernel; changing/removing the health route
 must make it fail. Container health also checks the live body, not just whether a process is running.
 
-Execution results are recorded in [evidence/T-01.md](evidence/T-01.md). T-02 through T-23 remain pending;
-health success does not certify authentication, persistence, other stories or the complete application.
+Execution results are recorded per task in [evidence](evidence/). T-01 through T-16 now have
+executed evidence; T-17 and later tasks remain pending in this snapshot. Health alone does not
+certify the other stories or the complete application.
 
 ## T-02 — Exact schema and transactional Laravel migrations
 
@@ -63,6 +64,7 @@ pwsh -File scripts/test-integration.ps1
 The script generates an ephemeral password without printing it, starts PostgreSQL 16 with
 temporary memory storage and no published database port, executes tests against that real
 engine, and removes only the named `manager-library-tests` containers on exit. Tests refuse
-to mutate a database unless `DB_DATABASE` is exactly `manager_library_test`. Each test also
-rolls back its transaction. This isolated test composition is T-02 evidence, not a claim that
+to mutate a database unless `DB_DATABASE` is exactly `manager_library_test`. Ordinary tests
+roll back their transactions; concurrency/live-HTTP tests commit isolated fixtures and remove
+their test schema afterward. This isolated composition is not a claim that
 the complete API/frontend/infrastructure task T-20 is finished.

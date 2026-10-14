@@ -14,6 +14,7 @@ COPY composer.json composer.lock ./
 RUN --mount=type=cache,target=/root/.composer/cache composer install --no-interaction --prefer-dist --no-scripts
 
 FROM dependencies AS application
+COPY docker/php.ini /usr/local/etc/php/conf.d/library.ini
 COPY . .
 RUN mkdir -p bootstrap/cache storage/framework/cache storage/framework/views storage/logs \
     && composer dump-autoload --no-interaction \

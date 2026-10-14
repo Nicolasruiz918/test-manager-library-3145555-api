@@ -8,6 +8,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Library\Adapters\Inbound\Http;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(using: function (): void {
@@ -19,11 +20,15 @@ return Application::configure(basePath: dirname(__DIR__))
             Illuminate\Foundation\Http\Middleware\TrimStrings::class,
             Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         ]);
+        $middleware->alias(['library.auth' => Http\Authenticate::class, 'library.role' => Http\RequireRole::class, 'library.json' => Http\JsonBody::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(static fn (Request $request, Throwable $error): bool => true);
-        $exceptions->render(static fn (NotFoundHttpException $error) => response()->json([
-            'code' => 'NOT_FOUND', 'message' => 'No se encontró el recurso.', 'details' => [],
-        ], 404));
+        $exceptions->dontReport([App\Library\Domain\DomainError::class]);
+        $exceptions->report(function (Throwable $error) {
+            Illuminate\Support\Facades\Log::error('Application operation failed.', ['exception_type' => $error::class]);
+            return false;
+        });
+        $exceptions->render(static fn (Throwable $error) => Http\ErrorResponse::render($error));
     })
     ->create();
