@@ -10,6 +10,7 @@ use App\Library\Application\Ports;
 use App\Library\Adapters\Outbound\Persistence;
 use App\Library\Adapters\Outbound\Runtime;
 use App\Library\Adapters\Outbound\Security;
+use App\Library\Adapters\Outbound\Storage;
 
 /** The single composition point for application ports and adapters. */
 final class LibraryServiceProvider extends ServiceProvider
@@ -31,6 +32,7 @@ final class LibraryServiceProvider extends ServiceProvider
         $this->app->singleton(Security\JwtTokens::class, fn ($app) => new Security\JwtTokens((string) $app['config']['library.jwt_secret']));
         $this->app->alias(Security\JwtTokens::class, Ports\TokenIssuer::class);
         $this->app->alias(Security\JwtTokens::class, Ports\TokenVerifier::class);
+        $this->app->singleton(Ports\CoverStorage::class, fn ($app) => new Storage\DiskCovers($app['config']['library.cover_directory']));
     }
 
     public function boot(): void
