@@ -5,6 +5,7 @@
   "license": "proprietary",
   "require": {
     "php": "^8.5",
+    "firebase/php-jwt": "^7.2",
     "laravel/framework": "^13.0"
   },
   "require-dev": {
