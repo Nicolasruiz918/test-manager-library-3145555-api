@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Tests\Architecture;
+namespace Tests\architecture;
 require_once __DIR__.'/DependencyRules.php';
 use PHPUnit\Framework\TestCase;
 final class ArchitectureTest extends TestCase

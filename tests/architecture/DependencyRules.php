@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Tests\Architecture;
+namespace Tests\architecture;
 use PhpParser\{Node, NodeFinder, NodeTraverser, ParserFactory};
 use PhpParser\NodeVisitor\NameResolver;
 final class DependencyRules
