@@ -36,3 +36,33 @@ must make it fail. Container health also checks the live body, not just whether 
 
 Execution results are recorded in [evidence/T-01.md](evidence/T-01.md). T-02 through T-23 remain pending;
 health success does not certify authentication, persistence, other stories or the complete application.
+
+## T-02 — Exact schema and transactional Laravel migrations
+
+Set `DATABASE_URL` for the target PostgreSQL 16 database, then run `php artisan library:migrate`
+inside the API container. The command takes an advisory transaction lock and runs the Laravel
+migrator plus its history in a single transaction. No migration runs during health startup.
+
+The migration repository uses a namespaced JSON comment on the existing `library` schema.
+There is no `migrations` table, session table or additional business entity. The schema contains
+exactly six tables and thirty columns with no defaults. Only the five documented categories
+are seeded. Initial-admin provisioning belongs to T-17. The checks `ck_book_total_positive`
+and `ck_user_role` are intentionally left for the original T-18.
+
+Use `library:migrate`, rather than standalone generic migration/reset commands, so DDL and
+history commit together. An interrupted operation rolls back; repeated execution is a no-op.
+An unknown schema comment or existing tables without migration history require inspection,
+and are not overwritten. Destructive reset/rollback of the initial business schema is disabled.
+
+After `docker compose build`, run the integration suite from PowerShell 7:
+
+```powershell
+pwsh -File scripts/test-integration.ps1
+```
+
+The script generates an ephemeral password without printing it, starts PostgreSQL 16 with
+temporary memory storage and no published database port, executes tests against that real
+engine, and removes only the named `manager-library-tests` containers on exit. Tests refuse
+to mutate a database unless `DB_DATABASE` is exactly `manager_library_test`. Each test also
+rolls back its transaction. This isolated test composition is T-02 evidence, not a claim that
+the complete API/frontend/infrastructure task T-20 is finished.
