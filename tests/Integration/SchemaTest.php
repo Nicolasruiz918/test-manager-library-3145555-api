@@ -73,10 +73,10 @@ final class SchemaTest extends TestCase
             '44444444-4444-4444-8444-444444444444' => 'Historia',
             '55555555-5555-4555-8555-555555555555' => 'Infantil',
         ], DB::table('library.category')->orderBy('id')->pluck('name', 'id')->all());
-        $this->assertSame(['2026_10_14_000001_create_library'], $this->app['migration.repository']->getRan());
+        $this->assertSame(['2026_10_14_000001_create_library', '2026_10_14_000002_enforce_total_and_role'], $this->app['migration.repository']->getRan());
     }
 
-    public function test_foreign_keys_indexes_and_only_initial_check_are_present(): void
+    public function test_foreign_keys_indexes_and_specified_checks_are_present(): void
     {
         $this->migrate();
         $constraints = DB::select("SELECT c.conrelid::regclass::text AS relation, c.conname, c.contype, pg_get_constraintdef(c.oid) AS definition FROM pg_constraint c JOIN pg_namespace n ON n.oid = c.connamespace WHERE n.nspname = 'library'");
@@ -86,7 +86,8 @@ final class SchemaTest extends TestCase
         $this->assertCount(4, array_filter($foreignKeys, static fn ($c) => str_contains($c->definition, 'ON DELETE RESTRICT')));
         $this->assertCount(6, array_filter($constraints, static fn ($c) => $c->contype === 'p'));
         $checks = array_values(array_filter($constraints, static fn ($c) => $c->contype === 'c'));
-        $this->assertSame(['ck_book_available_range'], array_column($checks, 'conname'));
+        $names = array_column($checks, 'conname'); sort($names);
+        $this->assertSame(['ck_book_available_range', 'ck_book_total_positive', 'ck_user_role'], $names);
         $indexes = DB::select("SELECT indexname, indexdef FROM pg_indexes WHERE schemaname = 'library'");
         $this->assertCount(15, $indexes);
         $definitions = array_column($indexes, 'indexdef', 'indexname');
