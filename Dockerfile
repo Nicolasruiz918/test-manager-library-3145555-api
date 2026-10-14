@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/root/.composer/cache composer install --no-intera
 FROM dependencies AS application
 COPY docker/php.ini /usr/local/etc/php/conf.d/library.ini
 COPY . .
-RUN mkdir -p bootstrap/cache storage/framework/cache storage/framework/views storage/logs \
+RUN mkdir -p bootstrap/cache storage/framework/cache storage/framework/views storage/logs storage/covers \
     && composer dump-autoload --no-interaction \
     && chown -R library:library /app
 USER library
