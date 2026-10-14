@@ -1,0 +1,13 @@
+name: manager-library-api
+services:
+  api:
+    build: .
+    image: manager-library-api:local
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(json_decode(file_get_contents('http://127.0.0.1:8000/health'), true) === ['status' => 'ok'] ? 0 : 1);"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
