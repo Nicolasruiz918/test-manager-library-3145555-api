@@ -17,6 +17,7 @@ services:
     image: manager-library-api:local
     volumes:
       - .:/app
+      - /app/vendor
     depends_on:
       db:
         condition: service_healthy

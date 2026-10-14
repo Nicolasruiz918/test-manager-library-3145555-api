@@ -21,6 +21,9 @@ final class LibraryServiceProvider extends ServiceProvider
         $this->app->singleton(Ports\UserRepository::class, fn ($app) => new Persistence\PgUserRepository($app['db']->connection()));
         $this->app->singleton(Ports\CategoryCatalog::class, fn ($app) => new Persistence\PgCategoryCatalog($app['db']->connection()));
         $this->app->singleton(Ports\Transaction::class, fn ($app) => new Persistence\PgTransaction($app['db']->connection()));
+        $this->app->singleton(Ports\LoanRepository::class, fn ($app) => new Persistence\PgLoanRepository($app['db']->connection()));
+        $this->app->singleton(Ports\LoanQueries::class, fn ($app) => new Persistence\PgLoanQueries($app['db']->connection(), $app->make(Ports\LoanRepository::class)));
+        $this->app->singleton(Ports\ReportQuery::class, fn ($app) => new Persistence\PgReportQuery($app['db']->connection()));
         $this->app->singleton(Ports\IdentifierGenerator::class, Runtime\RandomIds::class);
         $this->app->singleton(Ports\Clock::class, Runtime\SystemClock::class);
     }

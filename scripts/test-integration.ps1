@@ -10,7 +10,7 @@ try {
 }
 finally {
     # This named Compose project contains only disposable integration containers.
-    docker compose -f compose.test.yaml down
+    docker compose -f compose.test.yaml down --volumes
     $env:TEST_DB_PASSWORD = $previousPassword
     Pop-Location
 }
