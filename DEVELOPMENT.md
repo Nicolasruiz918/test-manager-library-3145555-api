@@ -35,7 +35,8 @@ The feature test dispatches actual requests through Laravel's kernel; changing/r
 must make it fail. Container health also checks the live body, not just whether a process is running.
 
 Execution results are recorded per task in [evidence](evidence/). T-01 through T-16 now have
-executed evidence; T-17 and later tasks remain pending in this snapshot. Health alone does not
+executed evidence; T-17 also verifies empty-database installation and admin login. T-18 and
+later tasks remain pending in this snapshot. Health alone does not
 certify the other stories or the complete application.
 
 ## T-02 — Exact schema and transactional Laravel migrations
@@ -68,3 +69,11 @@ to mutate a database unless `DB_DATABASE` is exactly `manager_library_test`. Ord
 roll back their transactions; concurrency/live-HTTP tests commit isolated fixtures and remove
 their test schema afterward. This isolated composition is not a claim that
 the complete API/frontend/infrastructure task T-20 is finished.
+
+## T-17 — Initial administrator
+
+Supply the nonempty values from `.env.example` through the deployment environment.
+Run `php artisan library:install` in the API container. It validates the signing
+key, migrates the database and provisions the admin using the application password
+hasher. Repeating it with the same credentials is safe. It never promotes a
+librarian or silently resets an existing password. Do not commit a populated `.env`.
