@@ -9,7 +9,7 @@ final class InstallLibrary extends Command
 {
     protected $signature = 'library:install';
     protected $description = 'Migrate the specified schema and provision the environment administrator';
-    public function handle(DatabaseManager $database, ProvisionAdminService $provision, TokenIssuer $tokens): int
+    public function handle(DatabaseManager $database, ProvisionAdminService $provision, TokenIssuer $tokens, \App\Library\Application\Ports\Clock $clock): int
     {
         $username = (string) config('library.admin_username'); $password = (string) config('library.admin_password');
         if (trim($username) === '' || $password === '') { $this->error('ADMIN_USERNAME and ADMIN_PASSWORD are required.'); return self::FAILURE; }

@@ -27,7 +27,7 @@ final class LibraryServiceProvider extends ServiceProvider
         $this->app->singleton(Ports\LoanQueries::class, fn ($app) => new Persistence\PgLoanQueries($app['db']->connection(), $app->make(Ports\LoanRepository::class)));
         $this->app->singleton(Ports\ReportQuery::class, fn ($app) => new Persistence\PgReportQuery($app['db']->connection()));
         $this->app->singleton(Ports\IdentifierGenerator::class, Runtime\RandomIds::class);
-        $this->app->singleton(Ports\Clock::class, Runtime\SystemClock::class);
+        $this->app->singleton(Ports\Clock::class, fn ($app) => new Runtime\BusinessClock($app['config']['app.env'], (string) $app['config']['library.demo_business_time']));
         $this->app->singleton(Ports\PasswordHasher::class, Security\ArgonPasswords::class);
         $this->app->singleton(Security\JwtTokens::class, fn ($app) => new Security\JwtTokens((string) $app['config']['library.jwt_secret']));
         $this->app->alias(Security\JwtTokens::class, Ports\TokenIssuer::class);
